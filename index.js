@@ -1,28 +1,27 @@
 const express = require('express');
 const cors = require('cors');
+const app = express();
 require('dotenv').config();
 
-const app = express();
+const puerto = process.env.PORT || 3000;
+
+// Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // para leer JSON del body
 
-const db = require('./db');
-const equiposRoutes = require('./routes/equipos');
+// Rutas
+app.use('/api', require('./routes/auth')); // para /api/register y /api/login
 app.use('/api/equipos', require('./routes/equipos'));
+app.use('/api/estadisticas', require('./routes/estadisticas'));
+app.use('/api/perfil', require('./routes/perfil'));
+app.use('/api/comunidad', require('./routes/comunidad'));
 
-
-
-app.get('/api/db-test', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT 1 + 1 AS resultado');
-    res.json({ resultado: rows[0].resultado });
-  } catch (error) {
-    console.error('Error al conectar con la base de datos:', error);
-    res.status(500).json({ error: 'Error de conexión' });
-  }
+// Ruta de prueba
+app.get('/api/test', (req, res) => {
+  res.json({ mensaje: 'Servidor funcionando correctamente' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+// Iniciar servidor
+app.listen(puerto, () => {
+  console.log(`Servidor escuchando en http://localhost:${puerto}`);
 });
